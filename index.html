@@ -1,0 +1,1389 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>趣味概率教室｜中学生概率计算与反直觉问题</title>
+    <meta name="description" content="通过交互式模拟学习概率：硬币与大数定律、生日悖论、蒙提霍尔、贝叶斯医学检测。含反直觉例题，适合中学生。">
+    <style>
+:root {
+  --bg: #0f172a;
+  --card: #111827;
+  --muted: #94a3b8;
+  --text: #e5e7eb;
+  --accent: #22d3ee;
+  --accent-2: #a78bfa;
+  --danger: #ef4444;
+  --ok: #10b981;
+}
+
+* { box-sizing: border-box; }
+
+html, body { height: 100%; }
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'PingFang SC', 'Microsoft YaHei', 'Noto Sans CJK SC', sans-serif;
+  background: radial-gradient(1200px 800px at 20% -10%, #1e293b 0%, var(--bg) 40%), var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+}
+
+.container {
+  width: min(100%, 1000px);
+  margin: 0 auto;
+  padding: 16px;
+}
+
+.site-header {
+  position: sticky;
+  top: 0;
+  backdrop-filter: blur(8px);
+  background: linear-gradient(135deg, rgba(15,23,42,.95) 0%, rgba(30,41,59,.9) 50%, rgba(15,23,42,.95) 100%);
+  border-bottom: 2px solid rgba(34,211,238,.3);
+  box-shadow: 0 4px 20px rgba(0,0,0,.3);
+  z-index: 10;
+  padding: 16px 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.site-header::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    radial-gradient(circle at 20% 20%, rgba(34,211,238,.1) 0%, transparent 50%),
+    radial-gradient(circle at 80% 80%, rgba(167,139,250,.1) 0%, transparent 50%),
+    radial-gradient(circle at 40% 40%, rgba(34,211,238,.05) 0%, transparent 50%);
+  z-index: -1;
+}
+
+.site-header h1 { 
+  margin: 8px 0 6px; 
+  font-size: 2.2em; 
+  font-weight: 800;
+  background: linear-gradient(135deg, #22d3ee 0%, #a78bfa 50%, #22d3ee 100%);
+  background-size: 200% 200%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: gradientShift 3s ease-in-out infinite;
+  text-shadow: 0 0 20px rgba(34,211,238,.3);
+}
+
+@keyframes gradientShift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+.site-header p { 
+  margin: 0 0 12px; 
+  color: var(--muted); 
+  font-size: 1.1em;
+  font-weight: 500;
+}
+
+.top-nav {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+  padding-bottom: 12px;
+  justify-content: center;
+}
+
+.top-nav a {
+  color: var(--text);
+  text-decoration: none;
+  padding: 8px 16px;
+  border: 1px solid rgba(255,255,255,.2);
+  border-radius: 20px;
+  background: rgba(255,255,255,.05);
+  font-weight: 600;
+  font-size: 0.9em;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.top-nav a::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(34,211,238,.2), transparent);
+  transition: left 0.5s ease;
+}
+
+.top-nav a:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: rgba(34,211,238,.1);
+  box-shadow: 0 0 15px rgba(34,211,238,.3);
+  transform: translateY(-2px);
+}
+
+.top-nav a:hover::before {
+  left: 100%;
+}
+
+.card {
+  background: linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.01));
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: 14px;
+  padding: 16px;
+  margin: 16px 0;
+  box-shadow: 0 10px 30px rgba(0,0,0,.25);
+}
+
+#basics.card {
+  background: linear-gradient(135deg, rgba(255,255,255,.06) 0%, rgba(255,255,255,.02) 50%, rgba(255,255,255,.04) 100%);
+  border: 1px solid rgba(255,255,255,.12);
+  box-shadow: 0 10px 30px rgba(0,0,0,.3);
+  position: relative;
+  overflow: hidden;
+}
+
+#basics.card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    radial-gradient(circle at 10% 20%, rgba(34,211,238,.06) 0%, transparent 60%),
+    radial-gradient(circle at 90% 80%, rgba(34,211,238,.04) 0%, transparent 60%);
+  z-index: -1;
+}
+
+#basics h2 {
+  color: rgba(34,211,238,.95);
+  text-shadow: 0 0 8px rgba(34,211,238,.2);
+}
+
+h1, h2 { line-height: 1.3; }
+
+.controls {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+  margin: 8px 0 12px;
+}
+
+label { font-size: 14px; color: var(--text); }
+input, button {
+  font: inherit;
+}
+input[type="number"], input[type="range"] {
+  background: #0b1220;
+  color: var(--text);
+  border: 1px solid rgba(255,255,255,.16);
+  border-radius: 8px;
+  padding: 6px 8px;
+}
+
+button {
+  background: linear-gradient(180deg, #0ea5e9, #22d3ee);
+  color: #031521;
+  border: none;
+  border-radius: 10px;
+  padding: 8px 14px;
+  cursor: pointer;
+}
+
+button.secondary {
+  background: linear-gradient(180deg, #6366f1, #a78bfa);
+  color: #0a0f1a;
+}
+
+button:disabled {
+  opacity: .5;
+  cursor: not-allowed;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+}
+
+.stat-label { color: var(--muted); font-size: 14px; }
+.stat-value { font-size: 28px; font-weight: 700; margin: 4px 0; }
+.muted { color: var(--muted); font-size: 13px; }
+.badge {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: rgba(34,211,238,.15);
+  border: 1px solid rgba(34,211,238,.5);
+}
+
+.formula {
+  display: block;
+  padding: 10px 14px;
+  margin: 10px 0;
+  background: linear-gradient(135deg, rgba(34,211,238,.08) 0%, rgba(34,211,238,.04) 100%);
+  border: 1px solid rgba(34,211,238,.2);
+  border-radius: 10px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace;
+  color: rgba(34,211,238,.9);
+  font-weight: 500;
+  box-shadow: 0 2px 6px rgba(34,211,238,.1);
+}
+
+.fold {
+  border: 1px solid rgba(255,255,255,.15);
+  background: linear-gradient(135deg, rgba(255,255,255,.08) 0%, rgba(255,255,255,.03) 100%);
+  border-radius: 12px;
+  margin: 12px 0;
+  box-shadow: 0 2px 8px rgba(0,0,0,.15);
+}
+.fold summary {
+  list-style: none;
+  cursor: pointer;
+  padding: 12px 16px;
+  font-weight: 600;
+  color: rgba(34,211,238,.9);
+  background: rgba(34,211,238,.05);
+  border-radius: 12px 12px 0 0;
+  transition: all 0.3s ease;
+}
+.fold summary:hover {
+  background: rgba(34,211,238,.08);
+  color: var(--accent);
+}
+.fold[open] summary { 
+  border-bottom: 1px solid rgba(255,255,255,.1);
+  border-radius: 12px 12px 0 0;
+}
+.fold summary::-webkit-details-marker { display: none; }
+.fold .content { 
+  padding: 16px; 
+  background: rgba(255,255,255,.02);
+}
+
+.bar { height: 8px; background: rgba(255,255,255,.08); border-radius: 6px; overflow: hidden; }
+.bar-fill { height: 100%; background: linear-gradient(90deg, #22d3ee, #06b6d4); width: 0%; }
+.bar-fill.alt { background: linear-gradient(90deg, #a78bfa, #6366f1); }
+
+/* Monty Hall */
+.monty-stage { display: grid; gap: 12px; }
+.doors { display: flex; gap: 12px; }
+.door {
+  flex: 1 1 0;
+  padding: 16px;
+  border-radius: 12px;
+  background: linear-gradient(180deg, #111827, #0b1220);
+  color: var(--text);
+  border: 1px solid rgba(255,255,255,.12);
+}
+.door.opened { border-color: var(--danger); color: var(--danger); }
+.door.selected { border-color: var(--accent); box-shadow: 0 0 0 2px rgba(34,211,238,.3) inset; }
+.door.win { border-color: var(--ok); color: var(--ok); background: rgba(16,185,129,.1); }
+.door.lose { border-color: var(--danger); color: var(--danger); background: rgba(239,68,68,.1); }
+
+.site-footer { text-align: center; color: var(--muted); margin: 24px 0 40px; }
+
+/* 知识卡片样式 */
+.knowledge-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
+  margin: 20px 0;
+}
+
+.knowledge-card {
+  background: linear-gradient(135deg, rgba(34,211,238,.08) 0%, rgba(34,211,238,.04) 100%);
+  border: 1px solid rgba(34,211,238,.2);
+  border-radius: 12px;
+  padding: 20px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.knowledge-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(34,211,238,.1), transparent);
+  transition: left 0.5s ease;
+}
+
+.knowledge-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(34,211,238,.2);
+  border-color: var(--accent);
+}
+
+.knowledge-card:hover::before {
+  left: 100%;
+}
+
+.knowledge-card h3 {
+  margin: 0 0 8px 0;
+  color: var(--accent);
+  font-size: 1.1em;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.knowledge-card p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.9em;
+  line-height: 1.4;
+}
+
+/* 弹窗样式 */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0,0,0,.7);
+  backdrop-filter: blur(4px);
+  z-index: 1000;
+  display: none;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.modal-overlay.show {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 1;
+}
+
+.modal-content {
+  background: linear-gradient(135deg, rgba(17,24,39,.95) 0%, rgba(30,41,59,.95) 100%);
+  border: 1px solid rgba(34,211,238,.3);
+  border-radius: 16px;
+  max-width: 600px;
+  max-height: 80vh;
+  width: 90%;
+  overflow-y: auto;
+  position: relative;
+  transform: scale(0.9);
+  transition: transform 0.3s ease;
+  box-shadow: 0 20px 60px rgba(0,0,0,.5);
+}
+
+.modal-overlay.show .modal-content {
+  transform: scale(1);
+}
+
+.modal-header {
+  padding: 20px 24px 16px;
+  border-bottom: 1px solid rgba(255,255,255,.1);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.modal-header h3 {
+  margin: 0;
+  color: var(--accent);
+  font-size: 1.3em;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.modal-close {
+  background: none;
+  border: none;
+  color: var(--muted);
+  font-size: 1.5em;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.modal-close:hover {
+  background: rgba(255,255,255,.1);
+  color: var(--text);
+}
+
+.modal-body {
+  padding: 20px 24px 24px;
+  color: var(--text);
+  line-height: 1.6;
+}
+
+.modal-body ul {
+  margin: 12px 0;
+  padding-left: 20px;
+}
+
+.modal-body li {
+  margin: 8px 0;
+}
+
+.modal-body strong {
+  color: var(--accent);
+}
+    </style>
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="container">
+        <h1>🎲 趣味概率教室 📊</h1>
+        <p>✨ 用直观的互动模拟，理解看似"反直觉"的概率现象 ✨</p>
+        <nav class="top-nav">
+          <a href="#basics">📚 概率知识与公式</a>
+          <a href="#coin">🪙 硬币与大数定律</a>
+          <a href="#birthday">🎂 生日悖论</a>
+          <a href="#monty">🚪 蒙提霍尔</a>
+          <a href="#bayes">🩺 贝叶斯检测</a>
+        </nav>
+      </div>
+    </header>
+
+    <main class="container">
+      <section id="basics" class="card">
+        <h2>📚 概率知识与常用公式</h2>
+        <p style="background: rgba(34,211,238,.06); padding: 12px; border-radius: 8px; border-left: 4px solid var(--accent); margin: 16px 0; font-weight: 500;">
+          📖 做题前先建立"工具箱"。点击下方卡片查看详细内容，这些概念与公式覆盖初中阶段常见题型。
+        </p>
+
+        <div class="knowledge-grid">
+          <div class="knowledge-card" onclick="openModal('basic-concepts')">
+            <h3>🎯 基本概念</h3>
+            <p>了解随机事件、必然事件、不可能事件、概率、互斥事件、对立事件等基础概念</p>
+          </div>
+          
+          <div class="knowledge-card" onclick="openModal('probability-rules')">
+            <h3>📏 概率的基本规律</h3>
+            <p>掌握概率取值范围、对立事件概率、互斥事件概率、条件概率等重要规律</p>
+          </div>
+          
+          <div class="knowledge-card" onclick="openModal('calculation-methods')">
+            <h3>🧮 如何计算概率</h3>
+            <p>学习等可能事件概率计算和用实验估计概率的方法</p>
+          </div>
+          
+          <div class="knowledge-card" onclick="openModal('solving-strategies')">
+            <h3>🛠️ 解题常用方法</h3>
+            <p>掌握列举法、树形图法、反面思考、分情况讨论等实用解题技巧</p>
+          </div>
+          
+          <div class="knowledge-card" onclick="openModal('common-mistakes')">
+            <h3>⚠️ 容易犯的错误</h3>
+            <p>避免混淆互斥和对立、赌徒心理、忽略条件、计算错误等常见陷阱</p>
+          </div>
+          
+          <div class="knowledge-card" onclick="openModal('key-concepts')">
+            <h3>📝 重要概念复习</h3>
+            <p>快速复习P(A)、互斥事件、对立事件、条件概率等核心概念</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- 弹窗内容 -->
+      <div id="modal-overlay" class="modal-overlay" onclick="closeModal(event)">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h3 id="modal-title">标题</h3>
+            <button class="modal-close" onclick="closeModal()">&times;</button>
+          </div>
+          <div class="modal-body" id="modal-body">
+            内容
+          </div>
+        </div>
+      </div>
+
+      <section id="coin" class="card">
+        <h2>🪙 硬币与大数定律</h2>
+        <p>一次次掷硬币，记录正反面比例。看一看：次数越多，频率越稳定。</p>
+        <div class="controls">
+          <label>每次模拟掷数（N）：<input id="coinFlipCount" type="number" min="1" max="100000" value="100"></label>
+          <label>重复模拟次数（R）：<input id="coinRepeatCount" type="number" min="1" max="1000" value="50"></label>
+          <button id="coinRunBtn">运行一次（掷 N 次）</button>
+          <button id="coinRunManyBtn">重复 R 次</button>
+          <button id="coinResetBtn" class="secondary">重置</button>
+        </div>
+        <div class="stats-grid">
+          <div>
+            <div class="stat-label">正面（Heads）</div>
+            <div class="stat-value" id="coinHeadsCount">0</div>
+            <div class="bar"><div id="coinHeadsBar" class="bar-fill" style="width:0%"></div></div>
+            <div class="muted">频率 <span id="coinHeadsFreq">0.00</span></div>
+          </div>
+          <div>
+            <div class="stat-label">反面（Tails）</div>
+            <div class="stat-value" id="coinTailsCount">0</div>
+            <div class="bar"><div id="coinTailsBar" class="bar-fill alt" style="width:0%"></div></div>
+            <div class="muted">频率 <span id="coinTailsFreq">0.00</span></div>
+          </div>
+          <div>
+            <div class="stat-label">总掷数</div>
+            <div class="stat-value" id="coinTotalCount">0</div>
+            <div class="muted">提示：短期“连出正面”并不罕见，长期更稳定</div>
+          </div>
+        </div>
+      </section>
+
+      <section id="birthday" class="card">
+        <h2>🎂 生日悖论</h2>
+        <p>在忽略闰年的情况下，班级中只要 <em>23</em> 人，就有超过 <strong>50%</strong> 的概率至少出现两人同一天生日。</p>
+        <div class="controls">
+          <label>班级人数：<input id="birthdaySize" type="range" min="2" max="60" value="23"></label>
+          <span class="badge" id="birthdaySizeLabel">23</span>
+          <button id="birthdaySimBtn">模拟一次</button>
+          <label>模拟重复次数：<input id="birthdayTrials" type="number" min="1" max="20000" value="1000"></label>
+          <button id="birthdaySimManyBtn">重复模拟</button>
+        </div>
+        <div class="stats-grid">
+          <div>
+            <div class="stat-label">理论概率（至少两人同生日）</div>
+            <div class="stat-value"><span id="birthdayProb">0.507</span></div>
+            <div class="muted">思考：为什么不是直接"配对"? 试从"都不相同"入手推导。</div>
+          </div>
+          <div style="background: rgba(255,255,255,.03); border: 1px solid rgba(255,255,255,.1); border-radius: 8px; padding: 12px;">
+            <div class="stat-label">📊 模拟实验结果</div>
+            <div style="display: flex; gap: 16px; align-items: center; margin: 8px 0;">
+              <div>
+                <div class="stat-value" style="font-size: 20px;"><span id="birthdayEmpirical">—</span></div>
+                <div class="muted" style="font-size: 11px;">实测概率</div>
+              </div>
+              <div>
+                <div class="stat-value" style="font-size: 16px;"><span id="birthdayStats">0 / 0</span></div>
+                <div class="muted" style="font-size: 11px;">成功/总数</div>
+              </div>
+            </div>
+            <div class="muted" id="birthdayResult" style="font-size: 12px;">点击模拟查看结果</div>
+            <div id="birthdayExplanation" class="muted" style="font-size: 11px; margin-top: 6px; padding: 6px; background: rgba(255,255,255,.02); border-radius: 4px; display: none;">
+              这个数字是通过模拟实验得出的概率。随着模拟次数增加，它会逐渐接近理论值。
+            </div>
+          </div>
+        </div>
+        <div id="birthdayDetails" class="card" style="margin-top: 16px; display: none;">
+          <h3>本次模拟详情</h3>
+          <div id="birthdayList"></div>
+          <div id="birthdayMatches" class="muted" style="margin-top: 8px;"></div>
+        </div>
+      </section>
+
+      <section id="monty" class="card">
+        <h2>🚪 蒙提霍尔问题（换不换门？）</h2>
+        <p><strong>游戏规则：</strong></p>
+        <ol>
+          <li>三扇门中有一扇门后面有奖品，其余两扇门后面是空的</li>
+          <li>你先选择一扇门（但不打开）</li>
+          <li>主持人会打开剩下两扇门中一扇空门</li>
+          <li>现在你可以选择：坚持原来的选择，或者换到另一扇未打开的门</li>
+          <li>最后打开你的最终选择，看是否中奖</li>
+        </ol>
+        <p><strong>思考：</strong>换门和不换门，哪个中奖概率更高？试试看！</p>
+        <div class="monty-stage">
+          <div class="doors" id="montyDoors">
+            <button class="door" data-index="0">门 1</button>
+            <button class="door" data-index="1">门 2</button>
+            <button class="door" data-index="2">门 3</button>
+          </div>
+          <div class="controls">
+            <button id="montyResetBtn" class="secondary">重开一局</button>
+            <button id="montySwitchBtn" disabled>我要换门</button>
+            <button id="montyStayBtn" disabled>我就不换</button>
+          </div>
+        </div>
+        <div class="stats-grid">
+          <div>
+            <div class="stat-label">始终换门策略 胜/局</div>
+            <div class="stat-value"><span id="montySwitchWins">0</span> / <span id="montySwitchPlays">0</span></div>
+            <div class="muted">理论应接近 2/3</div>
+          </div>
+          <div>
+            <div class="stat-label">始终不换策略 胜/局</div>
+            <div class="stat-value"><span id="montyStayWins">0</span> / <span id="montyStayPlays">0</span></div>
+            <div class="muted">理论应接近 1/3</div>
+          </div>
+          <div>
+            <div class="stat-label">自动模拟</div>
+            <div>
+              <label>轮数：<input id="montyAutoRounds" type="number" min="1" max="20000" value="1000"></label>
+            </div>
+            <div class="controls">
+              <button id="montyAutoSwitch">自动：总是换</button>
+              <button id="montyAutoStay">自动：总是不换</button>
+            </div>
+          </div>
+        </div>
+        <div class="muted">
+          <p><strong>操作提示：</strong></p>
+          <p>1️⃣ 点击任意一扇门进行初次选择</p>
+          <p>2️⃣ 主持人会打开一扇空门</p>
+          <p>3️⃣ 选择"换门"或"不换门"查看结果</p>
+          <p>4️⃣ 多玩几轮，观察换门和不换门的胜率差异</p>
+        </div>
+      </section>
+
+      <section id="bayes" class="card">
+        <h2>🩺 贝叶斯医学检测（阳性=一定得病？）</h2>
+        <p>设某病在人群中的患病率很低，即使测试很准，阳性结果也未必代表"很可能患病"。请调整参数观察阳性预测值的变化。</p>
+        <div class="controls">
+          <label>患病率（%）：<input id="bayesPrev" type="number" min="0" max="100" step="0.01" value="1"></label>
+          <label>灵敏度（检出真阳性 %）：<input id="bayesSens" type="number" min="0" max="100" step="0.1" value="99"></label>
+          <label>特异度（识别真阴性 %）：<input id="bayesSpec" type="number" min="0" max="100" step="0.1" value="95"></label>
+        </div>
+        <div class="stats-grid">
+          <div>
+            <div class="stat-label">阳性预测值 P(病|阳)</div>
+            <div class="stat-value" id="bayesPPV">—</div>
+            <div class="muted">思考：结合全概率与条件概率，写出 P(病|阳) 的表达式。</div>
+          </div>
+          <div>
+            <div class="stat-label">用 10,000 人举例</div>
+            <div class="muted" id="bayesExplainer">—</div>
+          </div>
+          <div>
+            <div class="stat-label">随机模拟</div>
+            <div>
+              <label>样本量：<input id="bayesSamples" type="number" min="100" max="1000000" value="10000"></label>
+            </div>
+            <div class="controls">
+              <button id="bayesSimBtn">运行模拟</button>
+              <div class="muted">观测 PPV：<span id="bayesEmpirical">—</span></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <footer class="site-footer">
+        <div class="container">
+          <p>© <span id="year"></span> 趣味概率教室 • 适合中学生的概率学习页面</p>
+        </div>
+      </footer>
+    </main>
+
+    <script>
+// 工具函数
+function $(selector) { return document.querySelector(selector); }
+function clamp(v, min, max) { return Math.min(max, Math.max(min, v)); }
+function formatPct(x, digits = 3) { return (x * 100).toFixed(digits) + '%'; }
+
+// 初始化年份
+(() => { const y = new Date().getFullYear(); const el = $('#year'); if (el) el.textContent = y; })();
+
+// ============ 知识卡片弹窗 ============
+const modalData = {
+  'basic-concepts': {
+    title: '🎯 基本概念',
+    content: `
+      <ul>
+        <li><strong>随机事件</strong>：可能发生也可能不发生的事情。比如"掷硬币得到正面"、"明天下雨"。</li>
+        <li><strong>必然事件</strong>：一定会发生的事情。比如"掷骰子得到1到6之间的数字"。</li>
+        <li><strong>不可能事件</strong>：绝对不会发生的事情。比如"掷普通骰子得到7点"。</li>
+        <li><strong>概率</strong>：用来描述随机事件发生可能性大小的数，用P(A)表示事件A的概率。</li>
+        <li><strong>互斥事件</strong>：不能同时发生的两个事件。比如掷硬币时"得到正面"和"得到反面"。</li>
+        <li><strong>对立事件</strong>：其中一个发生，另一个就不发生，且必有一个发生。比如"下雨"和"不下雨"。</li>
+      </ul>
+      <div class="muted" style="margin-top: 16px; padding: 12px; background: rgba(34,211,238,.05); border-radius: 8px;">
+        💡 想象掷硬币：每次结果不确定，但多次实验后，正面出现的比例会接近50%。
+      </div>
+    `
+  },
+  'probability-rules': {
+    title: '📏 概率的基本规律',
+    content: `
+      <ul>
+        <li><strong>概率的取值范围</strong>：任何事件的概率都在0到1之间。0表示不可能，1表示必然发生。</li>
+        <li><strong>对立事件的概率</strong>：如果A和B是对立事件，那么P(A) + P(B) = 1。</li>
+        <li><strong>互斥事件的概率</strong>：如果A和B不能同时发生，那么P(A或B) = P(A) + P(B)。</li>
+        <li><strong>条件概率</strong>：在B发生的条件下A发生的概率，记作P(A|B)。</li>
+      </ul>
+      <div class="muted" style="margin-top: 16px; padding: 12px; background: rgba(34,211,238,.05); border-radius: 8px;">
+        💡 例如：掷骰子得到偶数的概率是1/2，得到奇数的概率也是1/2，两者相加等于1。
+      </div>
+    `
+  },
+  'calculation-methods': {
+    title: '🧮 如何计算概率',
+    content: `
+      <ul>
+        <li><strong>等可能事件</strong>：当所有结果出现的可能性相等时，P(A) = A包含的结果数 ÷ 所有可能的结果数。</li>
+        <li><strong>用实验估计概率</strong>：做很多次实验，用事件发生的次数除以总次数来估计概率。</li>
+      </ul>
+      <div class="muted" style="margin-top: 16px; padding: 12px; background: rgba(34,211,238,.05); border-radius: 8px;">
+        💡 例如：掷骰子得到3的概率 = 1÷6 = 1/6，因为骰子有6个面，得到3只有1种情况。
+      </div>
+    `
+  },
+  'solving-strategies': {
+    title: '🛠️ 解题常用方法',
+    content: `
+      <ul>
+        <li><strong>列举法</strong>：把所有可能的结果都写出来，数一数有利结果有多少个。</li>
+        <li><strong>树形图法</strong>：画出分支图，按步骤展开所有可能性，特别适合连续事件。</li>
+        <li><strong>反面思考</strong>：有时直接算很复杂，可以先算"不发生"的概率，再用1减去它。</li>
+        <li><strong>分情况讨论</strong>：把复杂问题分成几种简单情况，分别计算后相加。</li>
+      </ul>
+      <div class="formula" style="margin-top: 16px;">生日悖论思路：P(至少两人同生日) = 1 − P(都不相同)</div>
+      <div class="formula">大数定律（直观）：做实验次数越多，频率越接近真实概率</div>
+    `
+  },
+  'common-mistakes': {
+    title: '⚠️ 容易犯的错误',
+    content: `
+      <ul>
+        <li><strong>混淆互斥和对立</strong>：互斥是不能同时发生，对立是必须有一个发生且只能有一个发生。</li>
+        <li><strong>赌徒心理</strong>：认为连续出现同一结果后，另一结果"该出现了"。实际上每次都是独立的。</li>
+        <li><strong>忽略条件</strong>：看到概率题要仔细分析是否有额外条件限制。</li>
+        <li><strong>计算错误</strong>：分数运算要小心，建议先化简再计算。</li>
+      </ul>
+      <div class="muted" style="margin-top: 16px; padding: 12px; background: rgba(239,68,68,.1); border-radius: 8px; border-left: 4px solid var(--danger);">
+        ⚠️ 记住：掷硬币连续5次正面后，第6次仍然是50%概率得到正面！
+      </div>
+    `
+  },
+  'key-concepts': {
+    title: '📝 重要概念复习',
+    content: `
+      <ul>
+        <li><strong>P(A)</strong>：事件A的概率</li>
+        <li><strong>互斥事件</strong>：不能同时发生的事件</li>
+        <li><strong>对立事件</strong>：一个发生另一个就不发生，且必有一个发生</li>
+        <li><strong>条件概率P(A|B)</strong>：在B发生的条件下A发生的概率</li>
+      </ul>
+      <div class="muted" style="margin-top: 16px; padding: 12px; background: rgba(34,211,238,.05); border-radius: 8px;">
+        💡 后续例题中不直接给出计算步骤，请尝试用这些概念自己分析推理。
+      </div>
+    `
+  }
+};
+
+function openModal(type) {
+  const modal = $('#modal-overlay');
+  const title = $('#modal-title');
+  const body = $('#modal-body');
+  
+  if (modalData[type]) {
+    title.innerHTML = modalData[type].title;
+    body.innerHTML = modalData[type].content;
+    modal.classList.add('show');
+    document.body.style.overflow = 'hidden';
+  }
+}
+
+function closeModal(event) {
+  if (event && event.target !== event.currentTarget && !event.target.classList.contains('modal-close')) {
+    return;
+  }
+  
+  const modal = $('#modal-overlay');
+  modal.classList.remove('show');
+  document.body.style.overflow = '';
+}
+
+// ESC键关闭弹窗
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    closeModal();
+  }
+});
+
+// ============ 硬币与大数定律 ============
+(() => {
+  const flipCountEl = $('#coinFlipCount');
+  const repeatCountEl = $('#coinRepeatCount');
+  const headsCountEl = $('#coinHeadsCount');
+  const tailsCountEl = $('#coinTailsCount');
+  const totalCountEl = $('#coinTotalCount');
+  const headsBarEl = $('#coinHeadsBar');
+  const tailsBarEl = $('#coinTailsBar');
+  const headsFreqEl = $('#coinHeadsFreq');
+  const tailsFreqEl = $('#coinTailsFreq');
+
+  let heads = 0, tails = 0;
+
+  function updateView() {
+    const total = heads + tails;
+    headsCountEl.textContent = heads;
+    tailsCountEl.textContent = tails;
+    totalCountEl.textContent = total;
+    const hf = total ? heads / total : 0;
+    const tf = total ? tails / total : 0;
+    headsBarEl.style.width = (hf * 100).toFixed(1) + '%';
+    tailsBarEl.style.width = (tf * 100).toFixed(1) + '%';
+    headsFreqEl.textContent = hf.toFixed(3);
+    tailsFreqEl.textContent = tf.toFixed(3);
+  }
+
+  function flipNTimes(n) {
+    for (let i = 0; i < n; i++) {
+      if (Math.random() < 0.5) heads++; else tails++;
+    }
+    updateView();
+  }
+
+  $('#coinRunBtn').addEventListener('click', () => {
+    const n = clamp(parseInt(flipCountEl.value || '0', 10), 1, 100000);
+    flipNTimes(n);
+  });
+
+  $('#coinRunManyBtn').addEventListener('click', () => {
+    const n = clamp(parseInt(flipCountEl.value || '0', 10), 1, 100000);
+    const r = clamp(parseInt(repeatCountEl.value || '0', 10), 1, 1000);
+    for (let i = 0; i < r; i++) flipNTimes(n);
+  });
+
+  $('#coinResetBtn').addEventListener('click', () => { heads = 0; tails = 0; updateView(); });
+  updateView();
+})();
+
+// ============ 生日悖论 ============
+(() => {
+  const sizeRange = $('#birthdaySize');
+  const sizeLabel = $('#birthdaySizeLabel');
+  const probEl = $('#birthdayProb');
+  const empiricalEl = $('#birthdayEmpirical');
+  const trialsEl = $('#birthdayTrials');
+  const resultEl = $('#birthdayResult');
+  const statsEl = $('#birthdayStats');
+  const detailsEl = $('#birthdayDetails');
+  const listEl = $('#birthdayList');
+  const matchesEl = $('#birthdayMatches');
+  const explanationEl = $('#birthdayExplanation');
+
+  let totalTrials = 0;
+  let successTrials = 0;
+
+  // 月份名称
+  const months = ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'];
+
+  function theoretical(n) {
+    // 1 - (365*364*...*(365-n+1)) / 365^n
+    if (n < 2) return 0;
+    let numerator = 1.0;
+    for (let i = 0; i < n; i++) {
+      numerator *= (365 - i) / 365;
+    }
+    return 1 - numerator;
+  }
+
+  function dayOfYear(dayNum) {
+    // 将0-364转换为月日格式
+    const daysInMonth = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+    let remainingDays = dayNum;
+    for (let month = 0; month < 12; month++) {
+      if (remainingDays < daysInMonth[month]) {
+        return `${months[month]}${remainingDays + 1}日`;
+      }
+      remainingDays -= daysInMonth[month];
+    }
+    return '12月31日';
+  }
+
+  function simulateOnceDetailed(n) {
+    const birthdays = [];
+    const seen = new Map(); // day -> [person indices]
+    let hasMatch = false;
+    const matches = [];
+
+    for (let i = 0; i < n; i++) {
+      const bday = Math.floor(Math.random() * 365);
+      birthdays.push(bday);
+      
+      if (!seen.has(bday)) {
+        seen.set(bday, []);
+      }
+      seen.get(bday).push(i + 1);
+      
+      if (seen.get(bday).length > 1) {
+        hasMatch = true;
+      }
+    }
+
+    // 找出所有重复的生日
+    for (const [day, people] of seen.entries()) {
+      if (people.length > 1) {
+        matches.push({
+          day: day,
+          people: people,
+          dateStr: dayOfYear(day)
+        });
+      }
+    }
+
+    return {
+      hasMatch,
+      birthdays,
+      matches
+    };
+  }
+
+  function simulateOnce(n) {
+    const seen = new Set();
+    for (let i = 0; i < n; i++) {
+      const bday = Math.floor(Math.random() * 365);
+      if (seen.has(bday)) return true;
+      seen.add(bday);
+    }
+    return false;
+  }
+
+  function runTrials(n, t) {
+    let success = 0;
+    for (let i = 0; i < t; i++) if (simulateOnce(n)) success++;
+    return success / t;
+  }
+
+  function updateTheo() {
+    const n = parseInt(sizeRange.value, 10);
+    sizeLabel.textContent = n;
+    probEl.textContent = theoretical(n).toFixed(3);
+  }
+
+  function updateStats() {
+    statsEl.textContent = `${successTrials} / ${totalTrials}`;
+    if (totalTrials > 0) {
+      const empiricalProb = (successTrials / totalTrials).toFixed(3);
+      empiricalEl.textContent = empiricalProb;
+      
+      // 显示解释说明
+      explanationEl.style.display = 'block';
+      const theoreticalProb = theoretical(parseInt(sizeRange.value, 10));
+      const diff = Math.abs(parseFloat(empiricalProb) - theoreticalProb);
+      
+      if (totalTrials < 10) {
+        explanationEl.innerHTML = `📝 模拟次数较少(${totalTrials}次)，结果可能波动较大。多试几次会更接近理论值。`;
+      } else if (diff < 0.05) {
+        explanationEl.innerHTML = `✅ 模拟结果(${empiricalProb})很接近理论值(${theoreticalProb.toFixed(3)})！这验证了概率理论的正确性。`;
+      } else {
+        explanationEl.innerHTML = `📊 模拟结果(${empiricalProb})与理论值(${theoreticalProb.toFixed(3)})有差异，这是随机性的体现。继续模拟会更接近。`;
+      }
+    } else {
+      explanationEl.style.display = 'none';
+    }
+  }
+
+  $('#birthdaySimBtn').addEventListener('click', () => {
+    const n = parseInt(sizeRange.value, 10);
+    const result = simulateOnceDetailed(n);
+    
+    totalTrials++;
+    if (result.hasMatch) successTrials++;
+    
+    // 更新结果显示
+    if (result.hasMatch) {
+      resultEl.textContent = `✅ 发现同生日！`;
+      resultEl.style.color = 'var(--ok)';
+    } else {
+      resultEl.textContent = `❌ 没有同生日`;
+      resultEl.style.color = 'var(--danger)';
+    }
+    
+    // 显示详情
+    detailsEl.style.display = 'block';
+    
+    // 生成生日列表
+    let listHtml = '<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 8px; margin: 8px 0;">';
+    for (let i = 0; i < result.birthdays.length; i++) {
+      const dayStr = dayOfYear(result.birthdays[i]);
+      const isMatch = result.matches.some(match => match.people.includes(i + 1));
+      listHtml += `<div style="padding: 4px 6px; border-radius: 4px; font-size: 12px; ${isMatch ? 'background: rgba(16,185,129,.2); border: 1px solid var(--ok);' : 'background: rgba(255,255,255,.05);'}">
+        第${i + 1}人: ${dayStr}
+      </div>`;
+    }
+    listHtml += '</div>';
+    listEl.innerHTML = listHtml;
+    
+    // 显示匹配信息
+    if (result.matches.length > 0) {
+      let matchStr = '🎯 同生日组合：';
+      result.matches.forEach(match => {
+        matchStr += `第${match.people.join('、')}人都是${match.dateStr}；`;
+      });
+      matchesEl.textContent = matchStr;
+      matchesEl.style.color = 'var(--ok)';
+    } else {
+      matchesEl.textContent = '没有发现同生日的组合';
+      matchesEl.style.color = 'var(--muted)';
+    }
+    
+    updateStats();
+  });
+
+  $('#birthdaySimManyBtn').addEventListener('click', () => {
+    const n = parseInt(sizeRange.value, 10);
+    const t = clamp(parseInt(trialsEl.value || '0', 10), 1, 20000);
+    
+    let batchSuccess = 0;
+    for (let i = 0; i < t; i++) {
+      if (simulateOnce(n)) batchSuccess++;
+    }
+    
+    totalTrials += t;
+    successTrials += batchSuccess;
+    
+    resultEl.textContent = `批量模拟完成：${batchSuccess}/${t} 次成功`;
+    resultEl.style.color = 'var(--text)';
+    
+    // 隐藏详情，因为是批量模拟
+    detailsEl.style.display = 'none';
+    
+    updateStats();
+  });
+
+  // 重置统计
+  const resetStats = () => {
+    totalTrials = 0;
+    successTrials = 0;
+    updateStats();
+    detailsEl.style.display = 'none';
+    resultEl.textContent = '点击模拟查看结果';
+    resultEl.style.color = 'var(--muted)';
+  };
+
+  sizeRange.addEventListener('input', () => {
+    updateTheo();
+    resetStats(); // 改变人数时重置统计
+  });
+  
+  updateTheo();
+  updateStats();
+})();
+
+// ============ 蒙提霍尔 ============
+(() => {
+  const doorsEl = $('#montyDoors');
+  const switchBtn = $('#montySwitchBtn');
+  const stayBtn = $('#montyStayBtn');
+  const resetBtn = $('#montyResetBtn');
+  const switchWinsEl = $('#montySwitchWins');
+  const switchPlaysEl = $('#montySwitchPlays');
+  const stayWinsEl = $('#montyStayWins');
+  const stayPlaysEl = $('#montyStayPlays');
+  const autoRoundsEl = $('#montyAutoRounds');
+
+  let prize = -1; // 奖品门
+  let selected = -1; // 玩家首选
+  let opened = -1; // 主持人打开
+  let gameStage = 'select'; // 'select' -> 'choose' -> 'result'
+
+  function choosePrize() { prize = Math.floor(Math.random() * 3); }
+
+  function renderDoors() {
+    doorsEl.querySelectorAll('.door').forEach((btn, idx) => {
+      btn.classList.remove('selected', 'opened', 'win', 'lose');
+      
+      if (gameStage === 'select' || gameStage === 'choose') {
+        // 选择阶段和决策阶段
+        btn.classList.toggle('selected', idx === selected);
+        if (idx === opened) {
+          btn.classList.add('opened');
+          btn.textContent = `门 ${idx + 1}\n❌`;
+        } else {
+          btn.textContent = `门 ${idx + 1}`;
+        }
+      } else if (gameStage === 'result') {
+        // 结果阶段，显示所有门的内容
+        if (idx === prize) {
+          btn.classList.add('win');
+          btn.textContent = `门 ${idx + 1}\n🎁`;
+        } else {
+          btn.classList.add('lose');
+          btn.textContent = `门 ${idx + 1}\n❌`;
+        }
+        btn.classList.toggle('selected', idx === selected);
+      }
+    });
+  }
+
+  function resetGame() {
+    selected = -1; 
+    opened = -1; 
+    gameStage = 'select';
+    choosePrize(); 
+    switchBtn.disabled = true; 
+    stayBtn.disabled = true;
+    doorsEl.querySelectorAll('.door').forEach(btn => {
+      btn.disabled = false;
+      btn.classList.remove('selected','opened','win','lose');
+      btn.textContent = `门 ${parseInt(btn.dataset.index) + 1}`;
+    });
+  }
+
+  function hostOpens() {
+    // 主持人打开一扇不是 prize 且不是 selected 的门
+    const candidates = [0,1,2].filter(i => i !== prize && i !== selected);
+    opened = candidates[Math.floor(Math.random() * candidates.length)];
+    gameStage = 'choose';
+    // 玩家可选择是否更换
+    switchBtn.disabled = false; 
+    stayBtn.disabled = false;
+    // 不能再点击门选择
+    doorsEl.querySelectorAll('.door').forEach(btn => btn.disabled = true);
+    renderDoors();
+  }
+
+  function play(strategy) {
+    // strategy: 'switch' | 'stay'
+    if (gameStage !== 'choose') return; // 只有在选择阶段才能操作
+    
+    const finalPick = strategy === 'switch' ? [0,1,2].find(i => i !== selected && i !== opened) : selected;
+    const win = finalPick === prize;
+    
+    // 更新最终选择
+    selected = finalPick;
+    gameStage = 'result';
+    
+    // 统计胜率
+    if (strategy === 'switch') {
+      switchPlaysEl.textContent = parseInt(switchPlaysEl.textContent,10) + 1;
+      if (win) switchWinsEl.textContent = parseInt(switchWinsEl.textContent,10) + 1;
+    } else {
+      stayPlaysEl.textContent = parseInt(stayPlaysEl.textContent,10) + 1;
+      if (win) stayWinsEl.textContent = parseInt(stayWinsEl.textContent,10) + 1;
+    }
+    
+    // 展示最终结果
+    switchBtn.disabled = true; 
+    stayBtn.disabled = true;
+    renderDoors();
+  }
+
+  doorsEl.addEventListener('click', (e) => {
+    const btn = e.target.closest('.door');
+    if (!btn) return;
+    const idx = parseInt(btn.dataset.index, 10);
+    if (gameStage === 'select') {
+      selected = idx; 
+      renderDoors(); 
+      hostOpens();
+    }
+  });
+
+  switchBtn.addEventListener('click', () => play('switch'));
+  stayBtn.addEventListener('click', () => play('stay'));
+  
+  resetBtn.addEventListener('click', () => {
+    resetGame();
+  });
+
+  // 自动模拟
+  $('#montyAutoSwitch').addEventListener('click', () => {
+    const rounds = clamp(parseInt(autoRoundsEl.value||'0',10), 1, 20000);
+    let wins = 0;
+    for (let i = 0; i < rounds; i++) {
+      const p = Math.floor(Math.random()*3);
+      const s = Math.floor(Math.random()*3);
+      const open = [0,1,2].filter(x => x!==p && x!==s)[Math.floor(Math.random()*([0,1,2].filter(x => x!==p && x!==s).length))];
+      const finalPick = [0,1,2].find(x => x!==s && x!==open);
+      if (finalPick === p) wins++;
+    }
+    switchPlaysEl.textContent = parseInt(switchPlaysEl.textContent,10) + rounds;
+    switchWinsEl.textContent = parseInt(switchWinsEl.textContent,10) + wins;
+  });
+
+  $('#montyAutoStay').addEventListener('click', () => {
+    const rounds = clamp(parseInt(autoRoundsEl.value||'0',10), 1, 20000);
+    let wins = 0;
+    for (let i = 0; i < rounds; i++) {
+      const p = Math.floor(Math.random()*3);
+      const s = Math.floor(Math.random()*3);
+      if (p === s) wins++;
+    }
+    stayPlaysEl.textContent = parseInt(stayPlaysEl.textContent,10) + rounds;
+    stayWinsEl.textContent = parseInt(stayWinsEl.textContent,10) + wins;
+  });
+
+  resetGame();
+})();
+
+// ============ 贝叶斯医学检测 ============
+(() => {
+  const prevEl = $('#bayesPrev');
+  const sensEl = $('#bayesSens');
+  const specEl = $('#bayesSpec');
+  const ppvEl = $('#bayesPPV');
+  const explainerEl = $('#bayesExplainer');
+  const samplesEl = $('#bayesSamples');
+  const empiricalEl = $('#bayesEmpirical');
+
+  function calcPPV(prev, sens, spec) {
+    const pi = prev;
+    const se = sens;
+    const sp = spec;
+    const numerator = pi * se;
+    const denominator = numerator + (1 - pi) * (1 - sp);
+    return denominator === 0 ? 0 : numerator / denominator;
+  }
+
+  function update() {
+    const pi = clamp(parseFloat(prevEl.value||'0')/100, 0, 1);
+    const se = clamp(parseFloat(sensEl.value||'0')/100, 0, 1);
+    const sp = clamp(parseFloat(specEl.value||'0')/100, 0, 1);
+    const ppv = calcPPV(pi, se, sp);
+    ppvEl.textContent = formatPct(ppv, 2);
+
+    const base = 10000;
+    const sick = Math.round(base * pi);
+    const healthy = base - sick;
+    const tp = Math.round(sick * se);
+    const fn = sick - tp;
+    const tn = Math.round(healthy * sp);
+    const fp = healthy - tn;
+    explainerEl.textContent = `在 10,000 人中：患病 ${sick}，健康 ${healthy}；阳性 = 真阳性 ${tp} + 误阳性 ${fp} ⇒ PPV ≈ ${formatPct(ppv,2)}`;
+  }
+
+  function simulate() {
+    const n = clamp(parseInt(samplesEl.value||'0',10), 100, 1000000);
+    const pi = clamp(parseFloat(prevEl.value||'0')/100, 0, 1);
+    const se = clamp(parseFloat(sensEl.value||'0')/100, 0, 1);
+    const sp = clamp(parseFloat(specEl.value||'0')/100, 0, 1);
+    let tp = 0, fp = 0;
+    for (let i = 0; i < n; i++) {
+      const sick = Math.random() < pi;
+      const testPositive = sick ? (Math.random() < se) : (Math.random() > sp);
+      if (testPositive) {
+        if (sick) tp++; else fp++;
+      }
+    }
+    const empirical = (tp + fp) === 0 ? 0 : tp / (tp + fp);
+    empiricalEl.textContent = empirical.toFixed(3);
+  }
+
+  prevEl.addEventListener('input', update);
+  sensEl.addEventListener('input', update);
+  specEl.addEventListener('input', update);
+  $('#bayesSimBtn').addEventListener('click', simulate);
+  update();
+})();
+    </script>
+
+    <!-- 智能体 Chat SDK -->
+    <script src="https://lf-cdn.coze.cn/obj/unpkg/flow-platform/chat-app-sdk/1.2.0-beta.10/libs/cn/index.js"></script>
+    <script>
+      // ============ 会话隔离配置 ============
+      // 配置项
+      // Cloudflare Pages 部署：API 在同一域名下，使用相对路径
+      // 本地开发：根据环境自动选择
+      const BACKEND_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+        ? 'http://localhost:8788'  // 本地开发时使用 Wrangler 默认端口
+        : '';  // 生产环境：Cloudflare Pages Functions 在同一域名下
+      const BOT_ID = '7555358290083987496'; // ⚠️ 请修改为您的 Bot ID
+
+      // 🔑 生成或获取唯一的学生ID（会话隔离的关键）
+      function getStudentId() {
+        // 策略1: 从URL参数获取（推荐用于分发不同链接给不同学生）
+        const urlParams = new URLSearchParams(window.location.search);
+        let studentId = urlParams.get('student_id');
+        
+        if (studentId) {
+          // 如果URL中有student_id，保存到localStorage
+          localStorage.setItem('coze_student_id', studentId);
+          return studentId;
+        }
+        
+        // 策略2: 从localStorage读取（用户之前访问过）
+        studentId = localStorage.getItem('coze_student_id');
+        if (studentId) {
+          return studentId;
+        }
+        
+        // 策略3: 生成随机ID（首次访问且无URL参数）
+        studentId = 'student-' + Math.random().toString(36).substring(2, 11) + '-' + Date.now();
+        localStorage.setItem('coze_student_id', studentId);
+        return studentId;
+      }
+
+      // 初始化聊天机器人
+      async function initializeChatbot() {
+        try {
+          // 1. 获取当前学生的唯一ID
+          const studentId = getStudentId();
+          console.log('🆔 当前学生ID:', studentId);
+          
+          // 2. 封装获取 token 的函数，用于初始化和刷新
+          async function fetchToken() {
+            console.log('🔄 正在从后端获取token...');
+            // 使用手动实现版本，确保 JWT 包含 session_name（会话隔离的关键）
+            const response = await fetch(`${BACKEND_URL}/api/get-coze-token-manual?student_id=${encodeURIComponent(studentId)}`);
+            
+            if (!response.ok) {
+              const errorData = await response.json().catch(() => ({}));
+              throw new Error(errorData.error || `服务器错误: ${response.status}`);
+            }
+            
+            const data = await response.json();
+            console.log('✅ 获取token成功，会话名称:', data.session_name);
+            return data.access_token;
+          }
+          
+          // 3. 获取初始 token
+          const accessToken = await fetchToken();
+          
+          // 4. 使用获取到的Token初始化 Coze Web SDK
+          // ⚠️ 关键配置：
+          // - 使用 botId（驼峰命名，兼容旧版 SDK）
+          // - 添加 onRefreshToken 回调（token 过期自动刷新）
+          // - 不传入 conversation_id（由系统根据 session_name 自动管理）
+          new CozeWebSDK.WebChatClient({
+            config: {
+              type: 'bot',       // ✅ 固定值（官方推荐）
+              botId: BOT_ID,     // 智能体 ID
+              isIframe: false    // ✅ 非 iframe 模式
+            },
+            componentProps: {
+              title: '概率学习助手',
+            },
+            auth: {
+              type: 'token',
+              token: accessToken,
+              onRefreshToken: async () => {  // ✅ token 刷新回调
+                console.log('🔄 Token即将过期，正在刷新...');
+                try {
+                  const newToken = await fetchToken();
+                  console.log('✅ Token刷新成功');
+                  return newToken;
+                } catch (error) {
+                  console.error('❌ Token刷新失败:', error);
+                  throw error;
+                }
+              }
+            },
+          });
+          
+          console.log('🎉 聊天机器人初始化成功！');
+          console.log('=' .repeat(60));
+          console.log('📋 会话隔离说明：');
+          console.log('   - 学生ID:', studentId);
+          console.log('   - 每个学生ID对应独立的会话空间');
+          console.log('   - 不同学生的对话历史完全隔离');
+          console.log('   - Token包含session_name实现隔离');
+          console.log('=' .repeat(60));
+          
+        } catch (error) {
+          console.error('❌ 初始化聊天机器人失败:', error);
+          alert('聊天功能初始化失败。\n\n错误信息: ' + error.message + '\n\n请检查：\n1. Cloudflare Pages 环境变量是否配置正确\n2. 网络连接是否正常\n3. 查看浏览器 Console 获取详细错误信息');
+        }
+      }
+      
+      // 页面加载完成后初始化
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initializeChatbot);
+      } else {
+        initializeChatbot();
+      }
+    </script>
+  </body>
+  </html>
+
+

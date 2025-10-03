@@ -1,0 +1,17 @@
+{
+  "name": "probability-knowledge-website",
+  "version": "1.0.0",
+  "description": "概率知识网页 - 基于 Cloudflare Pages 部署",
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler pages dev . --compatibility-date=2024-01-01",
+    "deploy": "wrangler pages deploy . --project-name=probability-knowledge"
+  },
+  "dependencies": {
+    "@coze/api": "^1.0.0"
+  },
+  "devDependencies": {
+    "wrangler": "^3.0.0"
+  }
+}
+
